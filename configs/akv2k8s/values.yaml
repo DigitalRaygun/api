@@ -1,0 +1,7 @@
+env_injector:
+  webhook:
+    podLabels:
+      aadpodidbinding: 
+  keyVault:
+    customAuth:
+      enabled: true
