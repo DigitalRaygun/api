@@ -1,7 +1,21 @@
 # api
 
+## Description
+
+### External High-Level Architecture
+
+![ExternalPath](.attachments/ExternalPath.png)
+
+### Internal High-Level Architecture
+
+![InternalPath](.attachments/InternalPath.png)
+
 ExpressJS
 AAD Pod Identity
+
+## Manual Snippets
+
+These snippets are used for manual steps for API development. Goal is to get this automated via Terraform/Pipelines/etc.
 
 ```
 az aks show -g service-cus-dev -n aks01-cus-dev --query identityProfile.kubeletidentity.clientId -otsv
@@ -26,4 +40,9 @@ helm upgrade -i api charts/api --namespace api --create-namespace -f ./configs/a
 
 ```
 kubectl create secret generic azure-dns-secret --from-literal=subscription-id=* --from-literal=dns-zone=* --from-literal=resource_group=* --namespace api
+```
+
+```
+az role definition create --role-definition .\configs\azureRbac\dns-zone-reader.json
+az role definition update --role-definition .\configs\azureRbac\dns-zone-reader.json
 ```
