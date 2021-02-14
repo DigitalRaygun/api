@@ -1,18 +1,7 @@
 var express = require('express');
+var azure = require('../azure');
+//const cache = require('../cache');
 var router = express.Router();
-
-const { DefaultAzureCredential } = require("@azure/identity");
-const { DnsManagementClient } = require("@azure/arm-dns");
-
-// TODO: Determine get/post
-
-//console.log('JavaScript HTTP trigger function processed a request.');
-
-//let outputText = 'Hi!     -The API';
-
-// when deployed to an azure host the default azure credential will authenticate the specified user assigned managed identity
-const credential = new DefaultAzureCredential();
-const dnsClient = new DnsManagementClient(credential, process.env["AZURE_SUBSCRIPTION_ID"]);
 
 const dnsResourceType = "Microsoft.Network/dnszones/"
 const recordTypes = ["A", "NS", "CNAME"];
@@ -25,10 +14,8 @@ async function dnsEntries(req, res, next) {
     let dnsRecords = [];
 
     try {
-        dnsRecords = await dnsClient.recordSets.listAllByDnsZone(process.env["AZURE_RESOURCE_GROUP"], process.env["AZURE_DNS_ZONE"])
+        dnsRecords = await azure.dnsClient.recordSets.listAllByDnsZone(process.env["AZURE_RESOURCE_GROUP"], process.env["AZURE_DNS_ZONE"])
         .then(result => {
-            console.log(result);
-
             return result;
         })
         .catch(err => {
@@ -41,6 +28,7 @@ async function dnsEntries(req, res, next) {
         throw new Error(err);
     } finally {
         req.dnsRecords = dnsRecords;
+
         next();
     }
 }
