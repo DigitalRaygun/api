@@ -1,0 +1,20 @@
+{
+    "Name": "DNS Zone Record Reader",
+    "Id": "",
+    "IsCustom": true,
+    "Description": "Can read DNS Zone records only.",
+    "Actions": [
+        "Microsoft.Network/dnsZones/all/read",
+        "Microsoft.Network/dnsZones/read",
+        "Microsoft.Authorization/*/read",
+        "Microsoft.Insights/alertRules/*",
+        "Microsoft.ResourceHealth/availabilityStatuses/read",
+        "Microsoft.Resources/deployments/*",
+        "Microsoft.Resources/subscriptions/resourceGroups/read"
+    ],
+    "NotActions": [
+    ],
+    "AssignableScopes": [
+        "/subscriptions/8e07a292-1bcf-4514-b713-233600c87b2f"
+    ]
+}

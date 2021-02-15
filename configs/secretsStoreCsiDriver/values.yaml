@@ -1,0 +1,6 @@
+linux:
+  tolerations:
+  - key: "type"
+    operator: "Equal"
+    value: "api"
+    effect: "NoSchedule"

@@ -1,0 +1,8 @@
+forceNamespaced: true
+
+nmi:
+  tolerations:
+  - key: "type"
+    operator: "Equal"
+    value: "api"
+    effect: "NoSchedule"

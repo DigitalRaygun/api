@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "api.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "api.labels" . | nindent 4 }}
+spec:
+{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.replicaCount }}
+{{- end }}
+  selector:
+    matchLabels:
+      {{- include "api.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "api.selectorLabels" . | nindent 8 }}
+        aadpodidbinding: {{ .Values.podIdentity.name }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "api.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          env:
+          - name: AZURE_SUBSCRIPTION_ID
+            valueFrom:
+              secretKeyRef:
+                name: azure-dns-secret
+                key: subscription-id
+          - name: AZURE_DNS_ZONE
+            valueFrom:
+              secretKeyRef:
+                name: azure-dns-secret
+                key: dns-zone
+          - name: AZURE_RESOURCE_GROUP
+            valueFrom:
+              secretKeyRef:
+                name: azure-dns-secret
+                key: resource_group
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          #volumeMounts:
+          #- name: secrets-store-inline
+            #mountPath: "/mnt/secrets-store"
+            #readOnly: true
+          ports:
+            - name: http
+              containerPort: 3000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      #volumes:
+      #- name: secrets-store-inline
+        #csi:
+          #driver: secrets-store.csi.k8s.io
+          #readOnly: true
+          #volumeAttributes:
+            #secretProviderClass: "drgapi-keyvault"
+          #nodePublishSecretRef:                       # Only required when using service principal mode
+            #name:                  # Only required when using service principal mode
+            #namespace: api

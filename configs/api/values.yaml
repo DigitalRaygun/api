@@ -1,0 +1,14 @@
+tolerations:
+- key: "type"
+  operator: "Equal"
+  value: "api"
+  effect: "NoSchedule"
+
+podIdentity:
+  name: "api"
+  resourceId: "/subscriptions/8e07a292-1bcf-4514-b713-233600c87b2f/resourceGroups/identities/providers/Microsoft.ManagedIdentity/userAssignedIdentities/api"
+  clientId: "beb3c501-5e50-4d2b-ab9b-9be7ae39b873"
+
+keyVault:
+  name: drgapi-keyvault
+  tenantId: 1766da08-5bc4-499b-8b38-6d2fe5dc9a10
